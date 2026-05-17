@@ -243,30 +243,6 @@
                         <span class="dot green"></span>
                         <span class="ms-2 small opacity-75">PDFService.idl</span>
                     </div>
-                    <pre class="code-content"><code>module PDFServiceModule {
-
-  interface PDFService {
-
-    // Fusion de PDFs
-    ByteSequence mergePDFs(
-      in ByteSeqList pdfFiles
-    ) raises (PDFException);
-
-    // Extraction de texte
-    string extractText(
-      in ByteSequence pdfData
-    ) raises (PDFException);
-
-    // Ajout de filigrane
-    ByteSequence addWatermark(
-      in ByteSequence pdfData,
-      in string watermarkText,
-      in float opacity
-    ) raises (PDFException);
-
-    // ... 12 autres méthodes
-  };
-};</code></pre>
                 </div>
             </div>
         </div>
