@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analyse PDF - CORBA Service</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark" id="mainNav">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="/"><i class="fas fa-file-pdf me-2"></i>CORBA PDF Service</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="/">Accueil</a></li>
+                <li class="nav-item"><a class="nav-link" href="/manage">Gestion</a></li>
+                <li class="nav-item"><a class="nav-link active" href="/analyze">Analyse</a></li>
+                <li class="nav-item"><a class="nav-link" href="/transform">Sécurité</a></li>
+                <li class="nav-item"><a class="nav-link" href="/create">Créer</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="page-header bg-info text-white py-4">
+    <div class="container">
+        <h1 class="h3 mb-0"><i class="fas fa-search me-2"></i>Analyse de PDFs</h1>
+        <p class="mb-0 opacity-75">Extraction de texte, recherche, statistiques</p>
+    </div>
+</div>
+
+<div class="container py-4">
+    <div id="alertZone"></div>
+
+    <ul class="nav nav-tabs nav-fill mb-4">
+        <li class="nav-item">
+            <a class="nav-link active" data-bs-toggle="tab" href="#tabInfo">
+                <i class="fas fa-info-circle me-1"></i>Informations
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#tabText">
+                <i class="fas fa-align-left me-1"></i>Extraire Texte
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#tabSearch">
+                <i class="fas fa-search me-1"></i>Rechercher
+            </a>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+
+        <!-- INFOS PDF -->
+        <div class="tab-pane fade show active" id="tabInfo">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-info-circle text-info me-2"></i>Statistiques du PDF</h5>
+                    <p class="text-muted small">Obtenez le nombre de pages, taille, auteur et nombre de mots.</p>
+                    <div class="drop-zone" onclick="document.getElementById('infoFile').click()">
+                        <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                        <p class="mb-0">Sélectionnez votre PDF</p>
+                        <input type="file" id="infoFile" accept=".pdf" class="d-none"
+                               onchange="showSelectedFile(this, 'infoFileDisplay')">
+                    </div>
+                    <div id="infoFileDisplay" class="mt-3"></div>
+                    <button class="btn btn-info text-white mt-3 px-4" onclick="submitInfo()">
+                        <i class="fas fa-chart-bar me-2"></i>Analyser le PDF
+                    </button>
+                </div>
+            </div>
+            <!-- Results for Info -->
+            <div id="infoResult" class="mt-4 d-none">
+                <div class="row g-3">
+                    <div class="col-sm-6 col-md-3">
+                        <div class="stat-card text-center p-4 bg-primary text-white rounded">
+                            <i class="fas fa-file-alt fa-2x mb-2"></i>
+                            <div class="fs-2 fw-bold" id="statPages">—</div>
+                            <div class="small">Pages</div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-3">
+                        <div class="stat-card text-center p-4 bg-success text-white rounded">
+                            <i class="fas fa-font fa-2x mb-2"></i>
+                            <div class="fs-2 fw-bold" id="statWords">—</div>
+                            <div class="small">Mots</div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-3">
+                        <div class="stat-card text-center p-4 bg-warning text-white rounded">
+                            <i class="fas fa-hdd fa-2x mb-2"></i>
+                            <div class="fs-2 fw-bold" id="statSize">—</div>
+                            <div class="small">Taille</div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-3">
+                        <div class="stat-card text-center p-4 bg-info text-white rounded">
+                            <i class="fas fa-user fa-2x mb-2"></i>
+                            <div class="fw-bold" id="statAuthor">—</div>
+                            <div class="small">Auteur</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card mt-3">
+                    <div class="card-body">
+                        <table class="table table-sm mb-0">
+                            <tr><td class="fw-semibold text-muted" style="width:140px">Titre</td><td id="detTitle">—</td></tr>
+                            <tr><td class="fw-semibold text-muted">Auteur</td><td id="detAuthor">—</td></tr>
+                            <tr><td class="fw-semibold text-muted">Fichier</td><td id="detFile">—</td></tr>
+                            <tr><td class="fw-semibold text-muted">Date création</td><td id="detDate">—</td></tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- EXTRACTION DE TEXTE -->
+        <div class="tab-pane fade" id="tabText">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-align-left text-secondary me-2"></i>Extraction de texte</h5>
+                    <p class="text-muted small">Extrayez tout le contenu textuel du PDF.</p>
+                    <div class="drop-zone" onclick="document.getElementById('textFile').click()">
+                        <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                        <p class="mb-0">Sélectionnez votre PDF</p>
+                        <input type="file" id="textFile" accept=".pdf" class="d-none"
+                               onchange="showSelectedFile(this, 'textFileDisplay')">
+                    </div>
+                    <div id="textFileDisplay" class="mt-3"></div>
+                    <button class="btn btn-secondary mt-3 px-4" onclick="submitExtractText()">
+                        <i class="fas fa-align-left me-2"></i>Extraire le texte
+                    </button>
+                </div>
+            </div>
+            <div id="textResult" class="mt-4 d-none">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <strong><i class="fas fa-align-left me-2"></i>Texte extrait</strong>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="copyText()">
+                            <i class="fas fa-copy me-1"></i>Copier
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <textarea id="extractedText" class="form-control font-monospace"
+                                  rows="15" readonly></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RECHERCHE -->
+        <div class="tab-pane fade" id="tabSearch">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-search text-primary me-2"></i>Recherche dans le PDF</h5>
+                    <p class="text-muted small">Trouvez un mot ou une phrase avec son contexte et le numéro de page.</p>
+                    <div class="drop-zone" onclick="document.getElementById('searchFile').click()">
+                        <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                        <p class="mb-0">Sélectionnez votre PDF</p>
+                        <input type="file" id="searchFile" accept=".pdf" class="d-none"
+                               onchange="showSelectedFile(this, 'searchFileDisplay')">
+                    </div>
+                    <div id="searchFileDisplay" class="mt-3"></div>
+                    <div class="input-group mt-3">
+                        <input type="text" id="searchTerm" class="form-control form-control-lg"
+                               placeholder="Terme à rechercher..." 
+                               onkeypress="if(event.key==='Enter') submitSearch()">
+                        <button class="btn btn-primary px-4" onclick="submitSearch()">
+                            <i class="fas fa-search me-1"></i>Rechercher
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div id="searchResult" class="mt-4 d-none">
+                <div id="searchResultContent"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="/js/app.js"></script>
+<script>
+function submitInfo() {
+    const file = document.getElementById('infoFile').files[0];
+    if (!file) return showAlert('Sélectionnez un PDF', 'warning');
+    const fd = new FormData(); fd.append('file', file);
+    showLoader();
+    fetch('/api/pdf/info', { method: 'POST', body: fd })
+        .then(r => r.json())
+        .then(data => {
+            hideLoader();
+            if (data.success) {
+                const d = data.data;
+                document.getElementById('statPages').textContent  = d.pageCount;
+                document.getElementById('statWords').textContent  = d.wordCount.toLocaleString();
+                document.getElementById('statSize').textContent   = d.fileSize;
+                document.getElementById('statAuthor').textContent = d.author || 'N/A';
+                document.getElementById('detTitle').textContent   = d.title;
+                document.getElementById('detAuthor').textContent  = d.author;
+                document.getElementById('detFile').textContent    = d.fileName;
+                document.getElementById('detDate').textContent    = d.creationDate;
+                document.getElementById('infoResult').classList.remove('d-none');
+                showAlert(data.message, 'success');
+            } else {
+                showAlert(data.message, 'danger');
+            }
+        })
+        .catch(e => { hideLoader(); showAlert('Erreur: ' + e.message, 'danger'); });
+}
+
+function submitExtractText() {
+    const file = document.getElementById('textFile').files[0];
+    if (!file) return showAlert('Sélectionnez un PDF', 'warning');
+    const fd = new FormData(); fd.append('file', file);
+    showLoader();
+    fetch('/api/pdf/extract-text', { method: 'POST', body: fd })
+        .then(r => r.json())
+        .then(data => {
+            hideLoader();
+            if (data.success) {
+                document.getElementById('extractedText').value = data.data;
+                document.getElementById('textResult').classList.remove('d-none');
+                showAlert(data.message, 'success');
+            } else {
+                showAlert(data.message, 'danger');
+            }
+        })
+        .catch(e => { hideLoader(); showAlert('Erreur: ' + e.message, 'danger'); });
+}
+
+function submitSearch() {
+    const file = document.getElementById('searchFile').files[0];
+    const term = document.getElementById('searchTerm').value.trim();
+    if (!file) return showAlert('Sélectionnez un PDF', 'warning');
+    if (!term) return showAlert('Entrez un terme à rechercher', 'warning');
+    const fd = new FormData(); fd.append('file', file); fd.append('term', term);
+    showLoader();
+    fetch('/api/pdf/search', { method: 'POST', body: fd })
+        .then(r => r.json())
+        .then(data => {
+            hideLoader();
+            const zone = document.getElementById('searchResultContent');
+            if (data.success) {
+                const results = data.data;
+                if (!results || results.length === 0) {
+                    zone.innerHTML = '<div class="alert alert-warning"><i class="fas fa-search me-2"></i>Aucun résultat trouvé pour "' + term + '"</div>';
+                } else {
+                    let html = '<div class="alert alert-success"><i class="fas fa-check me-2"></i>' + results.length + ' page(s) trouvée(s) pour "<strong>' + term + '</strong>"</div>';
+                    results.forEach(r => {
+                        html += `<div class="card mb-2">
+                            <div class="card-body py-2">
+                                <div class="d-flex justify-content-between">
+                                    <strong><i class="fas fa-file me-1"></i>Page ${r.pageNumber}</strong>
+                                    <span class="badge bg-primary">${r.occurrences} occurrence(s)</span>
+                                </div>
+                                <p class="mt-2 mb-0 text-muted small font-monospace">${r.context}</p>
+                            </div>
+                        </div>`;
+                    });
+                    zone.innerHTML = html;
+                }
+                document.getElementById('searchResult').classList.remove('d-none');
+            } else {
+                showAlert(data.message, 'danger');
+            }
+        })
+        .catch(e => { hideLoader(); showAlert('Erreur: ' + e.message, 'danger'); });
+}
+
+function copyText() {
+    const ta = document.getElementById('extractedText');
+    ta.select();
+    document.execCommand('copy');
+    showAlert('Texte copié dans le presse-papier !', 'success');
+}
+</script>
+</body>
+</html>

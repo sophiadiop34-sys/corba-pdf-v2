@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion PDF - CORBA Service</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark" id="mainNav">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="/"><i class="fas fa-file-pdf me-2"></i>CORBA PDF Service</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="/">Accueil</a></li>
+                <li class="nav-item"><a class="nav-link active" href="/manage">Gestion</a></li>
+                <li class="nav-item"><a class="nav-link" href="/analyze">Analyse</a></li>
+                <li class="nav-item"><a class="nav-link" href="/transform">Sécurité</a></li>
+                <li class="nav-item"><a class="nav-link" href="/create">Créer</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="page-header bg-primary text-white py-4">
+    <div class="container">
+        <h1 class="h3 mb-0"><i class="fas fa-tools me-2"></i>Gestion des PDFs</h1>
+        <p class="mb-0 opacity-75">Fusion, découpage, extraction, suppression, rotation</p>
+    </div>
+</div>
+
+<div class="container py-4">
+    <div id="alertZone"></div>
+
+    <!-- Tabs -->
+    <ul class="nav nav-tabs nav-fill mb-4" id="manageTabs">
+        <li class="nav-item">
+            <a class="nav-link active" data-bs-toggle="tab" href="#merge">
+                <i class="fas fa-compress-arrows-alt me-1"></i>Fusionner
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#split">
+                <i class="fas fa-expand-arrows-alt me-1"></i>Découper
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#extract">
+                <i class="fas fa-file-export me-1"></i>Extraire pages
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#delete">
+                <i class="fas fa-trash me-1"></i>Supprimer pages
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#reorder">
+                <i class="fas fa-sort me-1"></i>Réorganiser
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#rotate">
+                <i class="fas fa-redo me-1"></i>Rotation
+            </a>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+        <!-- FUSION -->
+        <div class="tab-pane fade show active" id="merge">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-compress-arrows-alt text-primary me-2"></i>Fusion de PDFs</h5>
+                    <p class="text-muted small">Sélectionnez 2 PDFs ou plus à fusionner dans l'ordre de sélection.</p>
+                    <div class="drop-zone" id="mergeZone" onclick="document.getElementById('mergeFiles').click()">
+                        <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                        <p class="mb-0">Glissez vos PDFs ici ou <strong>cliquez pour sélectionner</strong></p>
+                        <small class="text-muted">Sélection multiple requise (min. 2 fichiers)</small>
+                        <input type="file" id="mergeFiles" multiple accept=".pdf" class="d-none"
+                               onchange="handleFileSelect(this, 'mergeList')">
+                    </div>
+                    <div id="mergeList" class="file-list mt-3"></div>
+                    <button class="btn btn-primary mt-3 px-4" onclick="submitMerge()">
+                        <i class="fas fa-compress-arrows-alt me-2"></i>Fusionner les PDFs
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- DÉCOUPAGE -->
+        <div class="tab-pane fade" id="split">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-expand-arrows-alt text-info me-2"></i>Découpage en pages</h5>
+                    <p class="text-muted small">Chaque page du PDF sera exportée comme fichier séparé.</p>
+                    <div class="drop-zone" onclick="document.getElementById('splitFile').click()">
+                        <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                        <p class="mb-0">Glissez votre PDF ici</p>
+                        <input type="file" id="splitFile" accept=".pdf" class="d-none"
+                               onchange="showSelectedFile(this, 'splitInfo')">
+                    </div>
+                    <div id="splitInfo" class="mt-3"></div>
+                    <button class="btn btn-info text-white mt-3 px-4" onclick="submitSplit()">
+                        <i class="fas fa-expand-arrows-alt me-2"></i>Découper le PDF
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- EXTRACTION DE PAGES -->
+        <div class="tab-pane fade" id="extract">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-file-export text-success me-2"></i>Extraction de pages</h5>
+                    <p class="text-muted small">Extrayez une plage de pages consécutives.</p>
+                    <div class="drop-zone" onclick="document.getElementById('extractFile').click()">
+                        <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                        <p class="mb-0">Sélectionnez votre PDF</p>
+                        <input type="file" id="extractFile" accept=".pdf" class="d-none"
+                               onchange="showSelectedFile(this, 'extractInfo')">
+                    </div>
+                    <div id="extractInfo" class="mt-3"></div>
+                    <div class="row g-3 mt-2">
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold">Page de début</label>
+                            <input type="number" id="extractStart" class="form-control" value="1" min="1">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold">Page de fin</label>
+                            <input type="number" id="extractEnd" class="form-control" value="3" min="1">
+                        </div>
+                    </div>
+                    <button class="btn btn-success mt-3 px-4" onclick="submitExtract()">
+                        <i class="fas fa-file-export me-2"></i>Extraire les pages
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SUPPRESSION -->
+        <div class="tab-pane fade" id="delete">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-trash text-danger me-2"></i>Suppression de pages</h5>
+                    <p class="text-muted small">Supprimez des pages spécifiques (ex: 1, 3, 5).</p>
+                    <div class="drop-zone" onclick="document.getElementById('deleteFile').click()">
+                        <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                        <p class="mb-0">Sélectionnez votre PDF</p>
+                        <input type="file" id="deleteFile" accept=".pdf" class="d-none"
+                               onchange="showSelectedFile(this, 'deleteInfo')">
+                    </div>
+                    <div id="deleteInfo" class="mt-3"></div>
+                    <div class="mt-3">
+                        <label class="form-label fw-semibold">Pages à supprimer (séparées par des virgules)</label>
+                        <input type="text" id="deletePages" class="form-control" placeholder="ex: 1, 3, 5">
+                        <small class="text-muted">Exemple : 2, 4 supprime la page 2 et la page 4</small>
+                    </div>
+                    <button class="btn btn-danger mt-3 px-4" onclick="submitDelete()">
+                        <i class="fas fa-trash me-2"></i>Supprimer les pages
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- RÉORGANISATION -->
+        <div class="tab-pane fade" id="reorder">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-sort text-warning me-2"></i>Réorganisation des pages</h5>
+                    <p class="text-muted small">Spécifiez le nouvel ordre des pages.</p>
+                    <div class="drop-zone" onclick="document.getElementById('reorderFile').click()">
+                        <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                        <p class="mb-0">Sélectionnez votre PDF</p>
+                        <input type="file" id="reorderFile" accept=".pdf" class="d-none"
+                               onchange="showSelectedFile(this, 'reorderInfo')">
+                    </div>
+                    <div id="reorderInfo" class="mt-3"></div>
+                    <div class="mt-3">
+                        <label class="form-label fw-semibold">Nouvel ordre des pages</label>
+                        <input type="text" id="reorderPages" class="form-control" placeholder="ex: 3, 1, 2">
+                        <small class="text-muted">Pour un PDF de 3 pages, entrez tous les numéros dans le nouvel ordre</small>
+                    </div>
+                    <button class="btn btn-warning mt-3 px-4" onclick="submitReorder()">
+                        <i class="fas fa-sort me-2"></i>Réorganiser
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ROTATION -->
+        <div class="tab-pane fade" id="rotate">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-redo text-secondary me-2"></i>Rotation des pages</h5>
+                    <p class="text-muted small">Faites pivoter des pages ou tout le document.</p>
+                    <div class="drop-zone" onclick="document.getElementById('rotateFile').click()">
+                        <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                        <p class="mb-0">Sélectionnez votre PDF</p>
+                        <input type="file" id="rotateFile" accept=".pdf" class="d-none"
+                               onchange="showSelectedFile(this, 'rotateInfo')">
+                    </div>
+                    <div id="rotateInfo" class="mt-3"></div>
+                    <div class="row g-3 mt-2">
+                        <div class="col-md-5">
+                            <label class="form-label fw-semibold">Pages (vide = toutes)</label>
+                            <input type="text" id="rotatePages" class="form-control" placeholder="ex: 1, 2 (ou vide)">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Angle de rotation</label>
+                            <select id="rotateAngle" class="form-select">
+                                <option value="90">90° (sens horaire)</option>
+                                <option value="180">180° (retourné)</option>
+                                <option value="270">270° (sens anti-horaire)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary mt-3 px-4" onclick="submitRotate()">
+                        <i class="fas fa-redo me-2"></i>Appliquer la rotation
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Result Zone -->
+    <div id="resultZone" class="mt-4 d-none">
+        <div class="card border-success shadow">
+            <div class="card-header bg-success text-white">
+                <i class="fas fa-check-circle me-2"></i>Résultat
+            </div>
+            <div class="card-body" id="resultContent"></div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="/js/app.js"></script>
+<script>
+function submitMerge() {
+    const files = document.getElementById('mergeFiles').files;
+    if (files.length < 2) return showAlert('Sélectionnez au moins 2 PDFs', 'warning');
+    const fd = new FormData();
+    for (let f of files) fd.append('files', f);
+    callApi('/api/pdf/merge', fd, 'Fusion en cours...');
+}
+
+function submitSplit() {
+    const file = document.getElementById('splitFile').files[0];
+    if (!file) return showAlert('Sélectionnez un PDF', 'warning');
+    const fd = new FormData(); fd.append('file', file);
+    callApi('/api/pdf/split', fd, 'Découpage en cours...');
+}
+
+function submitExtract() {
+    const file  = document.getElementById('extractFile').files[0];
+    const start = document.getElementById('extractStart').value;
+    const end   = document.getElementById('extractEnd').value;
+    if (!file) return showAlert('Sélectionnez un PDF', 'warning');
+    const fd = new FormData();
+    fd.append('file', file); fd.append('start', start); fd.append('end', end);
+    callApi('/api/pdf/extract-pages', fd, 'Extraction en cours...');
+}
+
+function submitDelete() {
+    const file  = document.getElementById('deleteFile').files[0];
+    const pages = document.getElementById('deletePages').value;
+    if (!file) return showAlert('Sélectionnez un PDF', 'warning');
+    if (!pages) return showAlert('Entrez les pages à supprimer', 'warning');
+    const fd = new FormData();
+    fd.append('file', file); fd.append('pages', pages);
+    callApi('/api/pdf/delete-pages', fd, 'Suppression en cours...');
+}
+
+function submitReorder() {
+    const file  = document.getElementById('reorderFile').files[0];
+    const order = document.getElementById('reorderPages').value;
+    if (!file) return showAlert('Sélectionnez un PDF', 'warning');
+    if (!order) return showAlert('Entrez le nouvel ordre', 'warning');
+    const fd = new FormData();
+    fd.append('file', file); fd.append('order', order);
+    callApi('/api/pdf/reorder', fd, 'Réorganisation en cours...');
+}
+
+function submitRotate() {
+    const file  = document.getElementById('rotateFile').files[0];
+    const pages = document.getElementById('rotatePages').value;
+    const angle = document.getElementById('rotateAngle').value;
+    if (!file) return showAlert('Sélectionnez un PDF', 'warning');
+    const fd = new FormData();
+    fd.append('file', file);
+    if (pages) fd.append('pages', pages);
+    fd.append('angle', angle);
+    callApi('/api/pdf/rotate', fd, 'Rotation en cours...');
+}
+</script>
+</body>
+</html>

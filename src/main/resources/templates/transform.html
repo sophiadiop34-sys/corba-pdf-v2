@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sécurité & Transformation - CORBA Service</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark" id="mainNav">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="/"><i class="fas fa-file-pdf me-2"></i>CORBA PDF Service</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="/">Accueil</a></li>
+                <li class="nav-item"><a class="nav-link" href="/manage">Gestion</a></li>
+                <li class="nav-item"><a class="nav-link" href="/analyze">Analyse</a></li>
+                <li class="nav-item"><a class="nav-link active" href="/transform">Sécurité</a></li>
+                <li class="nav-item"><a class="nav-link" href="/create">Créer</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="page-header bg-warning text-dark py-4">
+    <div class="container">
+        <h1 class="h3 mb-0"><i class="fas fa-shield-alt me-2"></i>Sécurité & Transformation</h1>
+        <p class="mb-0 opacity-75">Mot de passe, filigrane, compression, conversion en image</p>
+    </div>
+</div>
+
+<div class="container py-4">
+    <div id="alertZone"></div>
+
+    <ul class="nav nav-tabs nav-fill mb-4">
+        <li class="nav-item">
+            <a class="nav-link active" data-bs-toggle="tab" href="#tabProtect">
+                <i class="fas fa-lock me-1"></i>Mot de passe
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#tabWatermark">
+                <i class="fas fa-tint me-1"></i>Filigrane
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#tabCompress">
+                <i class="fas fa-compress me-1"></i>Compression
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#tabImage">
+                <i class="fas fa-image me-1"></i>Vers Image
+            </a>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+
+        <!-- MOT DE PASSE -->
+        <div class="tab-pane fade show active" id="tabProtect">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-lock text-danger me-2"></i>Protection par mot de passe</h5>
+                    <p class="text-muted small">Chiffrez votre PDF avec un mot de passe utilisateur et propriétaire.</p>
+                    <div class="drop-zone" onclick="document.getElementById('protectFile').click()">
+                        <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                        <p class="mb-0">Sélectionnez votre PDF</p>
+                        <input type="file" id="protectFile" accept=".pdf" class="d-none"
+                               onchange="showSelectedFile(this, 'protectFileDisplay')">
+                    </div>
+                    <div id="protectFileDisplay" class="mt-3"></div>
+                    <div class="row g-3 mt-2">
+                        <div class="col-md-5">
+                            <label class="form-label fw-semibold">
+                                <i class="fas fa-key text-warning me-1"></i>Mot de passe propriétaire
+                            </label>
+                            <input type="password" id="ownerPass" class="form-control"
+                                   placeholder="Accès complet">
+                            <small class="text-muted">Pour modifier/supprimer la protection</small>
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label fw-semibold">
+                                <i class="fas fa-user-lock text-info me-1"></i>Mot de passe utilisateur
+                            </label>
+                            <input type="password" id="userPass" class="form-control"
+                                   placeholder="Pour ouvrir le PDF">
+                            <small class="text-muted">Pour ouvrir et lire le PDF</small>
+                        </div>
+                    </div>
+                    <button class="btn btn-danger mt-3 px-4" onclick="submitProtect()">
+                        <i class="fas fa-lock me-2"></i>Protéger le PDF
+                    </button>
+                </div>
+            </div>
+            <div id="resultZoneProtect" class="mt-4 d-none">
+                <div id="resultContentProtect"></div>
+            </div>
+        </div>
+
+        <!-- FILIGRANE -->
+        <div class="tab-pane fade" id="tabWatermark">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-tint text-info me-2"></i>Ajout de filigrane</h5>
+                    <p class="text-muted small">Ajoutez un texte en filigrane diagonal sur toutes les pages.</p>
+                    <div class="drop-zone" onclick="document.getElementById('watermarkFile').click()">
+                        <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                        <p class="mb-0">Sélectionnez votre PDF</p>
+                        <input type="file" id="watermarkFile" accept=".pdf" class="d-none"
+                               onchange="showSelectedFile(this, 'watermarkFileDisplay')">
+                    </div>
+                    <div id="watermarkFileDisplay" class="mt-3"></div>
+                    <div class="row g-3 mt-2">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Texte du filigrane</label>
+                            <input type="text" id="watermarkText" class="form-control"
+                                   placeholder="ex: CONFIDENTIEL" value="CONFIDENTIEL">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">
+                                Opacité : <span id="opacityVal">30%</span>
+                            </label>
+                            <input type="range" id="watermarkOpacity" class="form-range"
+                                   min="5" max="80" value="30"
+                                   oninput="document.getElementById('opacityVal').textContent=this.value+'%'">
+                        </div>
+                    </div>
+                    <button class="btn btn-info text-white mt-3 px-4" onclick="submitWatermark()">
+                        <i class="fas fa-tint me-2"></i>Ajouter le filigrane
+                    </button>
+                </div>
+            </div>
+            <div id="resultZoneWatermark" class="mt-4 d-none">
+                <div id="resultContentWatermark"></div>
+            </div>
+        </div>
+
+        <!-- COMPRESSION -->
+        <div class="tab-pane fade" id="tabCompress">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-compress text-success me-2"></i>Compression PDF</h5>
+                    <p class="text-muted small">Réduisez la taille du fichier PDF.</p>
+                    <div class="drop-zone" onclick="document.getElementById('compressFile').click()">
+                        <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                        <p class="mb-0">Sélectionnez votre PDF</p>
+                        <input type="file" id="compressFile" accept=".pdf" class="d-none"
+                               onchange="showSelectedFile(this, 'compressFileDisplay')">
+                    </div>
+                    <div id="compressFileDisplay" class="mt-3"></div>
+                    <button class="btn btn-success mt-3 px-4" onclick="submitCompress()">
+                        <i class="fas fa-compress me-2"></i>Compresser le PDF
+                    </button>
+                </div>
+            </div>
+            <div id="resultZoneCompress" class="mt-4 d-none">
+                <div id="resultContentCompress"></div>
+            </div>
+        </div>
+
+        <!-- CONVERSION IMAGE -->
+        <div class="tab-pane fade" id="tabImage">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-image text-warning me-2"></i>Conversion PDF → Image PNG</h5>
+                    <p class="text-muted small">Convertissez une page de votre PDF en image haute résolution.</p>
+                    <div class="drop-zone" onclick="document.getElementById('imageFile').click()">
+                        <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                        <p class="mb-0">Sélectionnez votre PDF</p>
+                        <input type="file" id="imageFile" accept=".pdf" class="d-none"
+                               onchange="showSelectedFile(this, 'imageFileDisplay')">
+                    </div>
+                    <div id="imageFileDisplay" class="mt-3"></div>
+                    <div class="row g-3 mt-2">
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold">Numéro de page</label>
+                            <input type="number" id="imagePage" class="form-control" value="1" min="1">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Résolution (DPI)</label>
+                            <select id="imageDpi" class="form-select">
+                                <option value="72">72 DPI (web)</option>
+                                <option value="150" selected>150 DPI (standard)</option>
+                                <option value="300">300 DPI (haute qualité)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-warning mt-3 px-4" onclick="submitToImage()">
+                        <i class="fas fa-image me-2"></i>Convertir en image
+                    </button>
+                </div>
+            </div>
+            <div id="resultZoneImage" class="mt-4 d-none">
+                <div id="resultContentImage"></div>
+                <div id="imagePreview" class="mt-3 d-none">
+                    <img id="previewImg" src="" class="img-fluid rounded border" style="max-height:500px">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="/js/app.js"></script>
+<script>
+function submitProtect() {
+    const file  = document.getElementById('protectFile').files[0];
+    const owner = document.getElementById('ownerPass').value;
+    const user  = document.getElementById('userPass').value;
+    if (!file) return showAlert('Sélectionnez un PDF', 'warning');
+    if (!owner || !user) return showAlert('Les deux mots de passe sont requis', 'warning');
+    const fd = new FormData();
+    fd.append('file', file); fd.append('ownerPassword', owner); fd.append('userPassword', user);
+    callApiTarget('/api/pdf/protect', fd, 'resultZoneProtect', 'resultContentProtect');
+}
+
+function submitWatermark() {
+    const file    = document.getElementById('watermarkFile').files[0];
+    const text    = document.getElementById('watermarkText').value;
+    const opacity = document.getElementById('watermarkOpacity').value / 100;
+    if (!file) return showAlert('Sélectionnez un PDF', 'warning');
+    if (!text) return showAlert('Entrez le texte du filigrane', 'warning');
+    const fd = new FormData();
+    fd.append('file', file); fd.append('text', text); fd.append('opacity', opacity);
+    callApiTarget('/api/pdf/watermark', fd, 'resultZoneWatermark', 'resultContentWatermark');
+}
+
+function submitCompress() {
+    const file = document.getElementById('compressFile').files[0];
+    if (!file) return showAlert('Sélectionnez un PDF', 'warning');
+    const fd = new FormData(); fd.append('file', file);
+    callApiTarget('/api/pdf/compress', fd, 'resultZoneCompress', 'resultContentCompress');
+}
+
+function submitToImage() {
+    const file = document.getElementById('imageFile').files[0];
+    const page = document.getElementById('imagePage').value;
+    const dpi  = document.getElementById('imageDpi').value;
+    if (!file) return showAlert('Sélectionnez un PDF', 'warning');
+    const fd = new FormData();
+    fd.append('file', file); fd.append('page', page); fd.append('dpi', dpi);
+    showLoader();
+    fetch('/api/pdf/to-image', { method: 'POST', body: fd })
+        .then(r => r.json())
+        .then(data => {
+            hideLoader();
+            if (data.success) {
+                const d = data.data;
+                document.getElementById('resultContentImage').innerHTML =
+                    `<div class="alert alert-success">
+                        <i class="fas fa-check-circle me-2"></i><strong>${data.message}</strong><br>
+                        <a href="${d.downloadUrl}" class="btn btn-success mt-2" download="${d.fileName}">
+                            <i class="fas fa-download me-1"></i>Télécharger l'image PNG
+                        </a>
+                    </div>`;
+                document.getElementById('resultZoneImage').classList.remove('d-none');
+                // Prévisualisation de l'image
+                document.getElementById('previewImg').src = d.downloadUrl;
+                document.getElementById('imagePreview').classList.remove('d-none');
+                showAlert('Conversion réussie !', 'success');
+            } else {
+                showAlert(data.message, 'danger');
+            }
+        })
+        .catch(e => { hideLoader(); showAlert('Erreur: ' + e.message, 'danger'); });
+}
+
+function callApiTarget(url, fd, zoneId, contentId) {
+    showLoader();
+    fetch(url, { method: 'POST', body: fd })
+        .then(r => r.json())
+        .then(data => {
+            hideLoader();
+            const zone    = document.getElementById(zoneId);
+            const content = document.getElementById(contentId);
+            if (data.success) {
+                const d = data.data;
+                content.innerHTML = `<div class="alert alert-success">
+                    <i class="fas fa-check-circle me-2"></i><strong>${data.message}</strong><br>
+                    <small class="text-muted">${d.message}</small><br>
+                    <a href="${d.downloadUrl}" class="btn btn-success mt-2" download="${d.fileName}">
+                        <i class="fas fa-download me-1"></i>Télécharger : ${d.fileName}
+                    </a>
+                </div>`;
+                zone.classList.remove('d-none');
+                showAlert(data.message, 'success');
+            } else {
+                showAlert(data.message, 'danger');
+            }
+        })
+        .catch(e => { hideLoader(); showAlert('Erreur: ' + e.message, 'danger'); });
+}
+</script>
+</body>
+</html>

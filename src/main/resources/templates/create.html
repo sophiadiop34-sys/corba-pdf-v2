@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Créer un PDF - CORBA Service</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark" id="mainNav">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="/"><i class="fas fa-file-pdf me-2"></i>CORBA PDF Service</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="/">Accueil</a></li>
+                <li class="nav-item"><a class="nav-link" href="/manage">Gestion</a></li>
+                <li class="nav-item"><a class="nav-link" href="/analyze">Analyse</a></li>
+                <li class="nav-item"><a class="nav-link" href="/transform">Sécurité</a></li>
+                <li class="nav-item"><a class="nav-link active" href="/create">Créer</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="page-header bg-success text-white py-4">
+    <div class="container">
+        <h1 class="h3 mb-0"><i class="fas fa-plus-circle me-2"></i>Création de PDF</h1>
+        <p class="mb-0 opacity-75">Générez un nouveau document PDF via CORBA + PDFBox</p>
+    </div>
+</div>
+
+<div class="container py-4">
+    <div id="alertZone"></div>
+
+    <div class="row g-4">
+        <!-- Formulaire de création -->
+        <div class="col-lg-7">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-success text-white">
+                    <i class="fas fa-edit me-2"></i>Nouveau document PDF
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            <i class="fas fa-heading text-success me-1"></i>Titre du document *
+                        </label>
+                        <input type="text" id="pdfTitle" class="form-control form-control-lg"
+                               placeholder="ex: Rapport de stage 2024">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            <i class="fas fa-user text-info me-1"></i>Auteur
+                        </label>
+                        <input type="text" id="pdfAuthor" class="form-control"
+                               placeholder="Votre nom">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold d-flex justify-content-between">
+                            <span><i class="fas fa-align-left text-secondary me-1"></i>Contenu du document</span>
+                            <span class="text-muted small fw-normal" id="charCount">0 caractères</span>
+                        </label>
+                        <textarea id="pdfContent" class="form-control font-monospace"
+                                  rows="14"
+                                  placeholder="Saisissez le contenu de votre document ici...&#10;&#10;Le texte sera automatiquement mis en page avec :&#10;  - Titre en en-tête&#10;  - Pagination automatique&#10;  - Pied de page avec date&#10;  - Police professionnelle"
+                                  oninput="document.getElementById('charCount').textContent=this.value.length+' caractères'"></textarea>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-success px-4" onclick="submitCreate()">
+                            <i class="fas fa-file-pdf me-2"></i>Générer le PDF
+                        </button>
+                        <button class="btn btn-outline-secondary" onclick="fillExample()">
+                            <i class="fas fa-magic me-1"></i>Exemple
+                        </button>
+                        <button class="btn btn-outline-danger" onclick="clearForm()">
+                            <i class="fas fa-trash me-1"></i>Effacer
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Infos et résultat -->
+        <div class="col-lg-5">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header">
+                    <i class="fas fa-info-circle me-2"></i>Ce que génère PDFBox
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex align-items-center gap-2 px-0">
+                            <i class="fas fa-check-circle text-success"></i>
+                            <span>Titre stylisé en bleu en haut</span>
+                        </li>
+                        <li class="list-group-item d-flex align-items-center gap-2 px-0">
+                            <i class="fas fa-check-circle text-success"></i>
+                            <span>Ligne de séparation décorative</span>
+                        </li>
+                        <li class="list-group-item d-flex align-items-center gap-2 px-0">
+                            <i class="fas fa-check-circle text-success"></i>
+                            <span>Auteur et date de création</span>
+                        </li>
+                        <li class="list-group-item d-flex align-items-center gap-2 px-0">
+                            <i class="fas fa-check-circle text-success"></i>
+                            <span>Contenu avec police Helvetica</span>
+                        </li>
+                        <li class="list-group-item d-flex align-items-center gap-2 px-0">
+                            <i class="fas fa-check-circle text-success"></i>
+                            <span>Pagination automatique multi-pages</span>
+                        </li>
+                        <li class="list-group-item d-flex align-items-center gap-2 px-0">
+                            <i class="fas fa-check-circle text-success"></i>
+                            <span>Pied de page avec horodatage</span>
+                        </li>
+                        <li class="list-group-item d-flex align-items-center gap-2 px-0">
+                            <i class="fas fa-check-circle text-success"></i>
+                            <span>Métadonnées embarquées (auteur, date…)</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Résultat -->
+            <div id="createResult" class="d-none">
+                <div class="card border-success shadow">
+                    <div class="card-header bg-success text-white">
+                        <i class="fas fa-check-circle me-2"></i>PDF généré avec succès !
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            <i class="fas fa-file-pdf fa-4x text-danger"></i>
+                        </div>
+                        <p id="createResultMsg" class="text-muted mb-3"></p>
+                        <a id="createDownloadBtn" href="#" class="btn btn-success btn-lg px-4" download>
+                            <i class="fas fa-download me-2"></i>Télécharger le PDF
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="/js/app.js"></script>
+<script>
+function submitCreate() {
+    const title   = document.getElementById('pdfTitle').value.trim();
+    const content = document.getElementById('pdfContent').value;
+    const author  = document.getElementById('pdfAuthor').value.trim();
+    if (!title) return showAlert('Le titre est obligatoire', 'warning');
+    const fd = new FormData();
+    fd.append('title', title);
+    fd.append('content', content);
+    fd.append('author', author);
+    showLoader();
+    fetch('/api/pdf/create', { method: 'POST', body: fd })
+        .then(r => r.json())
+        .then(data => {
+            hideLoader();
+            if (data.success) {
+                const d = data.data;
+                document.getElementById('createResultMsg').textContent = d.message;
+                document.getElementById('createDownloadBtn').href      = d.downloadUrl;
+                document.getElementById('createDownloadBtn').download  = d.fileName;
+                document.getElementById('createResult').classList.remove('d-none');
+                showAlert('PDF "' + title + '" créé avec succès !', 'success');
+            } else {
+                showAlert(data.message, 'danger');
+            }
+        })
+        .catch(e => { hideLoader(); showAlert('Erreur: ' + e.message, 'danger'); });
+}
+
+function fillExample() {
+    document.getElementById('pdfTitle').value  = 'Rapport de Projet CORBA';
+    document.getElementById('pdfAuthor').value = 'Étudiant Universitaire';
+    document.getElementById('pdfContent').value =
+`Introduction
+
+Ce document présente le système distribué de manipulation de fichiers PDF développé avec l'architecture CORBA (Common Object Request Broker Architecture).
+
+Architecture du Système
+
+Le système repose sur trois couches principales :
+1. Interface Web (Spring Boot + Thymeleaf + Bootstrap)
+2. Client/Serveur CORBA (Java ORB + POA)
+3. Services PDF (Apache PDFBox 2.x)
+
+Technologies Utilisées
+
+- Java 8 : langage principal, compatible CORBA natif
+- CORBA/ORB : communication distribuée entre composants
+- Spring Boot 2.7 : framework web et injection de dépendances
+- Apache PDFBox : manipulation avancée des fichiers PDF
+- Docker & Docker Compose : conteneurisation et déploiement
+- Bootstrap 5 : interface utilisateur moderne et responsive
+
+Fonctionnalités Implémentées
+
+Le système offre 15 opérations PDF organisées en 4 catégories :
+
+Gestion : fusion, découpage, extraction, suppression, réorganisation et rotation de pages.
+Analyse : extraction de texte, recherche plein texte, statistiques (pages, mots, taille).
+Sécurité : protection par mot de passe AES-128, ajout de filigrane transparent.
+Transformation : compression, conversion PDF vers image PNG.
+Création : génération de nouveaux PDFs formatés depuis du texte.
+
+Conclusion
+
+Ce projet démontre l'utilisation concrète de CORBA dans un contexte moderne, intégrant les meilleures pratiques de développement distribué avec une interface utilisateur professionnelle.`;
+    document.getElementById('charCount').textContent =
+        document.getElementById('pdfContent').value.length + ' caractères';
+}
+
+function clearForm() {
+    document.getElementById('pdfTitle').value   = '';
+    document.getElementById('pdfAuthor').value  = '';
+    document.getElementById('pdfContent').value = '';
+    document.getElementById('charCount').textContent = '0 caractères';
+    document.getElementById('createResult').classList.add('d-none');
+}
+</script>
+</body>
+</html>

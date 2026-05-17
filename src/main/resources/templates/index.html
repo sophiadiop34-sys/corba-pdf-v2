@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CORBA PDF Service</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark" id="mainNav">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="/">
+            <i class="fas fa-file-pdf me-2"></i>CORBA PDF Service
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navMenu">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link active" href="/"><i class="fas fa-home me-1"></i>Accueil</a></li>
+                <li class="nav-item"><a class="nav-link" href="/manage"><i class="fas fa-tools me-1"></i>Gestion</a></li>
+                <li class="nav-item"><a class="nav-link" href="/analyze"><i class="fas fa-search me-1"></i>Analyse</a></li>
+                <li class="nav-item"><a class="nav-link" href="/transform"><i class="fas fa-shield-alt me-1"></i>Sécurité</a></li>
+                <li class="nav-item"><a class="nav-link" href="/create"><i class="fas fa-plus-circle me-1"></i>Créer</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="hero-bg"></div>
+    <div class="container position-relative">
+        <div class="row align-items-center min-vh-80">
+            <div class="col-lg-7 text-white">
+                <div class="badge bg-warning text-dark mb-3 px-3 py-2">
+                    <i class="fas fa-network-wired me-1"></i> Architecture Distribuée CORBA
+                </div>
+                <h1 class="display-4 fw-bold mb-4">
+                    Service PDF<br><span class="text-gradient">Distribué & Intelligent</span>
+                </h1>
+                <p class="lead mb-4 opacity-90">
+                    Système professionnel de manipulation de fichiers PDF basé sur 
+                    <strong>CORBA</strong> (Common Object Request Broker Architecture), 
+                    <strong>Spring Boot</strong> et <strong>Apache PDFBox</strong>.
+                </p>
+                <div class="d-flex gap-3 flex-wrap">
+                    <a href="/manage" class="btn btn-primary btn-lg px-4">
+                        <i class="fas fa-rocket me-2"></i>Démarrer
+                    </a>
+                    <button class="btn btn-outline-light btn-lg px-4" onclick="checkStatus()">
+                        <i class="fas fa-heartbeat me-2"></i>Statut CORBA
+                    </button>
+                </div>
+                <!-- Status Badge -->
+                <div id="statusBadge" class="mt-4 d-none">
+                    <div class="alert alert-success d-inline-flex align-items-center" role="alert">
+                        <i class="fas fa-check-circle me-2"></i>
+                        <span id="statusText">Serveur CORBA opérationnel</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-5 d-none d-lg-block text-center">
+                <div class="hero-diagram">
+                    <div class="diagram-box browser-box">
+                        <i class="fas fa-globe fa-2x"></i><br>Navigateur Web
+                    </div>
+                    <div class="diagram-arrow">↓</div>
+                    <div class="diagram-box spring-box">
+                        <i class="fas fa-leaf fa-2x"></i><br>Spring Boot
+                    </div>
+                    <div class="diagram-arrow">↓ CORBA ↓</div>
+                    <div class="diagram-box corba-box">
+                        <i class="fas fa-server fa-2x"></i><br>PDF Service
+                    </div>
+                    <div class="diagram-arrow">↓</div>
+                    <div class="diagram-box pdfbox-box">
+                        <i class="fas fa-file-pdf fa-2x"></i><br>Apache PDFBox
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Grid -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold display-6">Fonctionnalités Complètes</h2>
+            <p class="text-muted">15+ opérations PDF disponibles via CORBA</p>
+        </div>
+        <div class="row g-4">
+
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card h-100" onclick="location.href='/manage'">
+                    <div class="feature-icon bg-primary">
+                        <i class="fas fa-object-group fa-2x text-white"></i>
+                    </div>
+                    <h5 class="fw-bold mt-3">Gestion PDF</h5>
+                    <ul class="list-unstyled text-muted small">
+                        <li><i class="fas fa-check text-success me-1"></i>Fusion de PDFs</li>
+                        <li><i class="fas fa-check text-success me-1"></i>Découpage</li>
+                        <li><i class="fas fa-check text-success me-1"></i>Extraction de pages</li>
+                        <li><i class="fas fa-check text-success me-1"></i>Suppression de pages</li>
+                        <li><i class="fas fa-check text-success me-1"></i>Réorganisation</li>
+                        <li><i class="fas fa-check text-success me-1"></i>Rotation</li>
+                    </ul>
+                    <a href="/manage" class="btn btn-sm btn-primary mt-2">
+                        <i class="fas fa-arrow-right me-1"></i>Accéder
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card h-100" onclick="location.href='/analyze'">
+                    <div class="feature-icon bg-info">
+                        <i class="fas fa-search fa-2x text-white"></i>
+                    </div>
+                    <h5 class="fw-bold mt-3">Analyse PDF</h5>
+                    <ul class="list-unstyled text-muted small">
+                        <li><i class="fas fa-check text-success me-1"></i>Extraction de texte</li>
+                        <li><i class="fas fa-check text-success me-1"></i>Recherche de mots</li>
+                        <li><i class="fas fa-check text-success me-1"></i>Nombre de pages</li>
+                        <li><i class="fas fa-check text-success me-1"></i>Nombre de mots</li>
+                        <li><i class="fas fa-check text-success me-1"></i>Taille du fichier</li>
+                        <li><i class="fas fa-check text-success me-1"></i>Métadonnées</li>
+                    </ul>
+                    <a href="/analyze" class="btn btn-sm btn-info mt-2">
+                        <i class="fas fa-arrow-right me-1"></i>Accéder
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card h-100" onclick="location.href='/transform'">
+                    <div class="feature-icon bg-warning">
+                        <i class="fas fa-shield-alt fa-2x text-white"></i>
+                    </div>
+                    <h5 class="fw-bold mt-3">Sécurité & Transformation</h5>
+                    <ul class="list-unstyled text-muted small">
+                        <li><i class="fas fa-check text-success me-1"></i>Mot de passe</li>
+                        <li><i class="fas fa-check text-success me-1"></i>Filigrane</li>
+                        <li><i class="fas fa-check text-success me-1"></i>Compression</li>
+                        <li><i class="fas fa-check text-success me-1"></i>PDF → Image PNG</li>
+                    </ul>
+                    <a href="/transform" class="btn btn-sm btn-warning mt-2">
+                        <i class="fas fa-arrow-right me-1"></i>Accéder
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card h-100" onclick="location.href='/create'">
+                    <div class="feature-icon bg-success">
+                        <i class="fas fa-plus-circle fa-2x text-white"></i>
+                    </div>
+                    <h5 class="fw-bold mt-3">Création PDF</h5>
+                    <ul class="list-unstyled text-muted small">
+                        <li><i class="fas fa-check text-success me-1"></i>Depuis du texte</li>
+                        <li><i class="fas fa-check text-success me-1"></i>Titre & auteur</li>
+                        <li><i class="fas fa-check text-success me-1"></i>Mise en page auto</li>
+                        <li><i class="fas fa-check text-success me-1"></i>Pagination</li>
+                    </ul>
+                    <a href="/create" class="btn btn-sm btn-success mt-2">
+                        <i class="fas fa-arrow-right me-1"></i>Accéder
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Tech Stack -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">Stack Technologique</h2>
+        </div>
+        <div class="row g-3 justify-content-center">
+            <div class="col-auto"><span class="tech-badge java">☕ Java 8</span></div>
+            <div class="col-auto"><span class="tech-badge corba">🔗 CORBA / ORB</span></div>
+            <div class="col-auto"><span class="tech-badge spring">🌱 Spring Boot 2.7</span></div>
+            <div class="col-auto"><span class="tech-badge pdfbox">📄 Apache PDFBox 2.x</span></div>
+            <div class="col-auto"><span class="tech-badge docker">🐳 Docker</span></div>
+            <div class="col-auto"><span class="tech-badge maven">🔧 Maven</span></div>
+            <div class="col-auto"><span class="tech-badge bootstrap">🎨 Bootstrap 5</span></div>
+            <div class="col-auto"><span class="tech-badge thymeleaf">🍃 Thymeleaf</span></div>
+        </div>
+    </div>
+</section>
+
+<!-- Architecture Section -->
+<section class="py-5 bg-dark text-white">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h2 class="fw-bold mb-4">Architecture CORBA</h2>
+                <p class="opacity-75 mb-4">
+                    Ce projet utilise <strong>CORBA (Common Object Request Broker Architecture)</strong> 
+                    pour la communication distribuée entre le client Spring Boot et le serveur de services PDF.
+                </p>
+                <div class="corba-flow">
+                    <div class="flow-step">
+                        <span class="step-num">1</span>
+                        <div>
+                            <strong>Client Web</strong><br>
+                            <small class="opacity-75">Le navigateur envoie une requête HTTP</small>
+                        </div>
+                    </div>
+                    <div class="flow-step">
+                        <span class="step-num">2</span>
+                        <div>
+                            <strong>Spring Boot (ORB Client)</strong><br>
+                            <small class="opacity-75">Traduction HTTP → requête CORBA via l'ORB</small>
+                        </div>
+                    </div>
+                    <div class="flow-step">
+                        <span class="step-num">3</span>
+                        <div>
+                            <strong>POA + Servant CORBA</strong><br>
+                            <small class="opacity-75">Dispatching de la requête vers PDFServiceImpl</small>
+                        </div>
+                    </div>
+                    <div class="flow-step">
+                        <span class="step-num">4</span>
+                        <div>
+                            <strong>Apache PDFBox</strong><br>
+                            <small class="opacity-75">Exécution réelle de l'opération PDF</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="dot red"></span>
+                        <span class="dot yellow"></span>
+                        <span class="dot green"></span>
+                        <span class="ms-2 small opacity-75">PDFService.idl</span>
+                    </div>
+                    <pre class="code-content"><code>module PDFServiceModule {
+
+  interface PDFService {
+
+    // Fusion de PDFs
+    ByteSequence mergePDFs(
+      in ByteSeqList pdfFiles
+    ) raises (PDFException);
+
+    // Extraction de texte
+    string extractText(
+      in ByteSequence pdfData
+    ) raises (PDFException);
+
+    // Ajout de filigrane
+    ByteSequence addWatermark(
+      in ByteSequence pdfData,
+      in string watermarkText,
+      in float opacity
+    ) raises (PDFException);
+
+    // ... 12 autres méthodes
+  };
+};</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="py-4 bg-darker text-center text-white-50">
+    <div class="container">
+        <p class="mb-0">
+            <i class="fas fa-graduation-cap me-2"></i>
+            Projet Académique — CORBA PDF Service | Java 8 + Spring Boot + PDFBox
+        </p>
+    </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script>
+function checkStatus() {
+    fetch('/api/pdf/status')
+        .then(r => r.json())
+        .then(data => {
+            const badge = document.getElementById('statusBadge');
+            const text  = document.getElementById('statusText');
+            badge.classList.remove('d-none');
+            if (data.success) {
+                badge.querySelector('.alert').className = 'alert alert-success d-inline-flex align-items-center';
+                text.textContent = '✔ CORBA Opérationnel | ' + data.data.serverTime;
+            } else {
+                badge.querySelector('.alert').className = 'alert alert-danger d-inline-flex align-items-center';
+                text.textContent = '✖ Erreur serveur';
+            }
+        })
+        .catch(() => {
+            document.getElementById('statusBadge').classList.remove('d-none');
+            document.getElementById('statusText').textContent = '✖ Serveur non joignable';
+        });
+}
+</script>
+</body>
+</html>

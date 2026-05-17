@@ -1,0 +1,129 @@
+/**
+ * PDFService.idl
+ * Interface Definition Language pour le Service CORBA de manipulation PDF
+ * Définit toutes les opérations disponibles via CORBA
+ */
+
+module PDFServiceModule {
+
+    // Exception personnalisée pour les erreurs PDF
+    exception PDFException {
+        string message;
+    };
+
+    // Structure pour les informations d'un PDF
+    struct PDFInfo {
+        string fileName;
+        long   pageCount;
+        long   fileSizeBytes;
+        long   wordCount;
+        string author;
+        string title;
+        string creationDate;
+    };
+
+    // Structure pour les résultats de recherche
+    struct SearchResult {
+        long   pageNumber;
+        string context;
+        long   occurrences;
+    };
+
+    // Séquences de types de base
+    typedef sequence<octet>        ByteSequence;
+    typedef sequence<ByteSequence> ByteSeqList;
+    typedef sequence<long>         LongSequence;
+    typedef sequence<string>       StringSequence;
+    typedef sequence<SearchResult> SearchResultList;
+
+    /**
+     * Interface principale du service PDF
+     */
+    interface PDFService {
+
+        // ─── GESTION PDF ──────────────────────────────────────────────
+
+        /** Fusionne plusieurs PDFs en un seul */
+        ByteSequence mergePDFs(in ByteSeqList pdfFiles)
+            raises (PDFException);
+
+        /** Découpe un PDF en plusieurs fichiers (une page par fichier) */
+        ByteSeqList splitPDF(in ByteSequence pdfData)
+            raises (PDFException);
+
+        /** Extrait une plage de pages d'un PDF */
+        ByteSequence extractPages(in ByteSequence pdfData,
+                                   in long startPage,
+                                   in long endPage)
+            raises (PDFException);
+
+        /** Supprime des pages spécifiques d'un PDF */
+        ByteSequence deletePages(in ByteSequence pdfData,
+                                  in LongSequence pageNumbers)
+            raises (PDFException);
+
+        /** Réorganise les pages d'un PDF selon un ordre donné */
+        ByteSequence reorderPages(in ByteSequence pdfData,
+                                   in LongSequence newOrder)
+            raises (PDFException);
+
+        /** Effectue une rotation de pages (angle: 90, 180, 270) */
+        ByteSequence rotatePages(in ByteSequence pdfData,
+                                  in LongSequence pageNumbers,
+                                  in long angle)
+            raises (PDFException);
+
+        // ─── ANALYSE PDF ──────────────────────────────────────────────
+
+        /** Extrait tout le texte du PDF */
+        string extractText(in ByteSequence pdfData)
+            raises (PDFException);
+
+        /** Recherche un mot/phrase dans le PDF */
+        SearchResultList searchText(in ByteSequence pdfData,
+                                     in string searchTerm)
+            raises (PDFException);
+
+        /** Retourne les métadonnées et statistiques du PDF */
+        PDFInfo getPDFInfo(in ByteSequence pdfData,
+                            in string fileName)
+            raises (PDFException);
+
+        // ─── SÉCURITÉ & TRANSFORMATION ───────────────────────────────
+
+        /** Protège un PDF par mot de passe */
+        ByteSequence addPassword(in ByteSequence pdfData,
+                                  in string ownerPassword,
+                                  in string userPassword)
+            raises (PDFException);
+
+        /** Ajoute un filigrane (watermark) textuel */
+        ByteSequence addWatermark(in ByteSequence pdfData,
+                                   in string watermarkText,
+                                   in float opacity)
+            raises (PDFException);
+
+        /** Compresse un PDF pour réduire sa taille */
+        ByteSequence compressPDF(in ByteSequence pdfData)
+            raises (PDFException);
+
+        /** Convertit la première page en image PNG */
+        ByteSequence convertToImage(in ByteSequence pdfData,
+                                     in long pageNumber,
+                                     in long dpi)
+            raises (PDFException);
+
+        // ─── CRÉATION ────────────────────────────────────────────────
+
+        /** Crée un nouveau PDF à partir d'un contenu texte */
+        ByteSequence createPDF(in string title,
+                                in string content,
+                                in string author)
+            raises (PDFException);
+
+        // ─── UTILITAIRES ─────────────────────────────────────────────
+
+        /** Vérifie que le service est opérationnel */
+        string ping();
+    };
+};

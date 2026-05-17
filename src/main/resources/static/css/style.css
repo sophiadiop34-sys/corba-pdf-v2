@@ -1,0 +1,215 @@
+/* ================================================================
+   CORBA PDF Service - Styles Globaux
+   ================================================================ */
+
+:root {
+    --primary:   #1e50a0;
+    --accent:    #f59e0b;
+    --dark:      #0f172a;
+    --darker:    #070d1a;
+    --gradient:  linear-gradient(135deg, #1e50a0 0%, #0ea5e9 100%);
+}
+
+* { box-sizing: border-box; }
+
+body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: #f8fafc;
+    color: #1e293b;
+}
+
+/* ── Navbar ─────────────────────────────────────────────────── */
+#mainNav {
+    background: var(--gradient);
+    box-shadow: 0 2px 20px rgba(0,0,0,.3);
+}
+#mainNav .navbar-brand { font-size: 1.3rem; letter-spacing: .5px; }
+#mainNav .nav-link     { opacity: .85; transition: opacity .2s; }
+#mainNav .nav-link:hover,
+#mainNav .nav-link.active { opacity: 1; font-weight: 600; }
+
+/* ── Hero ────────────────────────────────────────────────────── */
+.hero-section {
+    position: relative;
+    background: var(--gradient);
+    overflow: hidden;
+    padding: 80px 0 60px;
+}
+.hero-bg {
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.min-vh-80 { min-height: 80vh; }
+.text-gradient {
+    background: linear-gradient(135deg, #fbbf24, #f97316);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* ── Architecture Diagram ───────────────────────────────────── */
+.hero-diagram {
+    display: flex; flex-direction: column;
+    align-items: center; gap: 4px;
+}
+.diagram-box {
+    width: 180px; padding: 14px 16px;
+    border-radius: 12px; text-align: center;
+    font-size: .85rem; font-weight: 600;
+    color: white; box-shadow: 0 4px 20px rgba(0,0,0,.25);
+}
+.browser-box { background: #6366f1; }
+.spring-box  { background: #22c55e; }
+.corba-box   { background: #f59e0b; color: #1e293b; }
+.pdfbox-box  { background: #ef4444; }
+.diagram-arrow {
+    color: rgba(255,255,255,.7);
+    font-weight: 700; font-size: .95rem;
+}
+
+/* ── Feature Cards ──────────────────────────────────────────── */
+.feature-card {
+    background: white;
+    border-radius: 16px;
+    padding: 28px 24px;
+    box-shadow: 0 2px 12px rgba(0,0,0,.07);
+    transition: transform .2s, box-shadow .2s;
+    cursor: pointer;
+}
+.feature-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 30px rgba(0,0,0,.14);
+}
+.feature-icon {
+    width: 60px; height: 60px;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+}
+
+/* ── Tech Badges ─────────────────────────────────────────────── */
+.tech-badge {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: .9rem;
+    border: 2px solid transparent;
+}
+.tech-badge.java      { background:#fff3cd; color:#856404; border-color:#ffc107; }
+.tech-badge.corba     { background:#d1ecf1; color:#0c5460; border-color:#17a2b8; }
+.tech-badge.spring    { background:#d4edda; color:#155724; border-color:#28a745; }
+.tech-badge.pdfbox    { background:#f8d7da; color:#721c24; border-color:#dc3545; }
+.tech-badge.docker    { background:#cce5ff; color:#004085; border-color:#007bff; }
+.tech-badge.maven     { background:#e2e3e5; color:#383d41; border-color:#6c757d; }
+.tech-badge.bootstrap { background:#e8d5f5; color:#5e2a84; border-color:#9b59b6; }
+.tech-badge.thymeleaf { background:#d4edda; color:#155724; border-color:#28a745; }
+
+/* ── CORBA Flow ─────────────────────────────────────────────── */
+.corba-flow    { display: flex; flex-direction: column; gap: 12px; }
+.flow-step {
+    display: flex; align-items: flex-start; gap: 16px;
+    background: rgba(255,255,255,.06);
+    padding: 14px 16px; border-radius: 10px;
+    border-left: 3px solid var(--accent);
+}
+.step-num {
+    background: var(--accent); color: #1e293b;
+    width: 28px; height: 28px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: .85rem; flex-shrink: 0;
+}
+
+/* ── Code Block ─────────────────────────────────────────────── */
+.code-block {
+    background: #1e2533; border-radius: 12px;
+    overflow: hidden; font-size: .8rem;
+}
+.code-header {
+    background: #2d3748; padding: 10px 16px;
+    display: flex; align-items: center; gap: 6px;
+}
+.dot { width: 12px; height: 12px; border-radius: 50%; }
+.dot.red    { background: #ff5f57; }
+.dot.yellow { background: #febc2e; }
+.dot.green  { background: #28c840; }
+.code-content {
+    margin: 0; padding: 20px 24px;
+    color: #a8d8ea; background: transparent;
+    overflow-x: auto; line-height: 1.6;
+}
+.code-content code { color: inherit; }
+
+/* ── Page Header ─────────────────────────────────────────────── */
+.page-header { border-bottom: 3px solid rgba(255,255,255,.2); }
+
+/* ── Drop Zone ───────────────────────────────────────────────── */
+.drop-zone {
+    border: 2px dashed #cbd5e1;
+    border-radius: 12px; padding: 40px 24px;
+    text-align: center; cursor: pointer;
+    transition: all .2s; background: #f8fafc;
+}
+.drop-zone:hover {
+    border-color: var(--primary);
+    background: #eff6ff;
+}
+.drop-zone.drag-over {
+    border-color: #22c55e;
+    background: #f0fdf4;
+}
+
+/* ── File List ───────────────────────────────────────────────── */
+.file-list .file-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 14px; background: #f1f5f9;
+    border-radius: 8px; margin-bottom: 6px;
+    font-size: .9rem;
+}
+.file-item i { color: #ef4444; }
+
+/* ── Nav Tabs ────────────────────────────────────────────────── */
+.nav-tabs .nav-link { color: #64748b; font-weight: 500; }
+.nav-tabs .nav-link.active {
+    color: var(--primary); font-weight: 700;
+    border-bottom: 3px solid var(--primary);
+}
+
+/* ── Stat Cards ──────────────────────────────────────────────── */
+.stat-card { border-radius: 14px; transition: transform .2s; }
+.stat-card:hover { transform: scale(1.04); }
+
+/* ── Result Zone ─────────────────────────────────────────────── */
+#resultZone .card { border-radius: 12px; }
+
+/* ── Loader ──────────────────────────────────────────────────── */
+#loaderOverlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,.5); z-index: 9999;
+    align-items: center; justify-content: center;
+}
+#loaderOverlay.active { display: flex; }
+.loader-box {
+    background: white; border-radius: 16px;
+    padding: 40px 50px; text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,.3);
+}
+.spinner-corba {
+    width: 60px; height: 60px;
+    border: 5px solid #e2e8f0;
+    border-top-color: var(--primary);
+    border-radius: 50%; animation: spin .8s linear infinite;
+    margin: 0 auto 16px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Alert ───────────────────────────────────────────────────── */
+#alertZone .alert { border-radius: 10px; }
+
+/* ── Footer ──────────────────────────────────────────────────── */
+.bg-darker { background: var(--darker) !important; }
+
+/* ── Responsive ──────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .hero-section { padding: 50px 0 40px; }
+    .display-4 { font-size: 2rem; }
+    .nav-tabs .nav-link { font-size: .82rem; padding: .5rem .4rem; }
+}
